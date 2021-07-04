@@ -2046,6 +2046,7 @@ INT8U  OS_TCBInit (INT8U    prio,
 
 
     OS_ENTER_CRITICAL();
+    //从空闲TCB链表的头部那一个TCB给新任务使用，同时空闲TCB链表指向下一个
     ptcb = OSTCBFreeList;                                  /* Get a free TCB from the free TCB list    */
     if (ptcb != (OS_TCB *)0) {
         OSTCBFreeList            = ptcb->OSTCBNext;        /* Update pointer to free TCB list          */
@@ -2137,6 +2138,7 @@ INT8U  OS_TCBInit (INT8U    prio,
 #endif
 
         OS_ENTER_CRITICAL();
+        //每次将新的TCB加入到OSTCBList的头部，再将OSTCBList指回头部
         ptcb->OSTCBNext = OSTCBList;                       /* Link into TCB chain                      */
         ptcb->OSTCBPrev = (OS_TCB *)0;
         if (OSTCBList != (OS_TCB *)0) {
@@ -2145,6 +2147,7 @@ INT8U  OS_TCBInit (INT8U    prio,
         OSTCBList               = ptcb;
         OSRdyGrp               |= ptcb->OSTCBBitY;         /* Make task ready to run                   */
         OSRdyTbl[ptcb->OSTCBY] |= ptcb->OSTCBBitX;
+        //OSTaskCtr没发现有任何实际的意义
         OSTaskCtr++;                                       /* Increment the #tasks counter             */
         OS_TRACE_TASK_READY(ptcb);
         OS_EXIT_CRITICAL();
