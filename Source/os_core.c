@@ -1587,7 +1587,7 @@ static  void  OS_InitTaskStat (void)
 * Returns    : none
 *********************************************************************************************************
 */
-
+//初始化TCB
 static  void  OS_InitTCBList (void)
 {
     INT8U    ix;
@@ -1598,6 +1598,7 @@ static  void  OS_InitTCBList (void)
 
     OS_MemClr((INT8U *)&OSTCBTbl[0],     sizeof(OSTCBTbl));      /* Clear all the TCBs                 */
     OS_MemClr((INT8U *)&OSTCBPrioTbl[0], sizeof(OSTCBPrioTbl));  /* Clear the priority table           */
+    //初始化TCB内容，并将所有TCB用单链表连接起来
     for (ix = 0u; ix < (OS_MAX_TASKS + OS_N_SYS_TASKS - 1u); ix++) {    /* Init. list of free TCBs     */
         ix_next =  ix + 1u;
         ptcb1   = &OSTCBTbl[ix];
@@ -1608,11 +1609,14 @@ static  void  OS_InitTCBList (void)
 #endif
     }
     ptcb1                   = &OSTCBTbl[ix];
+    //链表最后一个指向数据为0
     ptcb1->OSTCBNext        = (OS_TCB *)0;                       /* Last OS_TCB                        */
 #if OS_TASK_NAME_EN > 0u
     ptcb1->OSTCBTaskName    = (INT8U *)(void *)"?";              /* Unknown name                       */
 #endif
+    //已使用的TCB链表目前为空，数据为0
     OSTCBList               = (OS_TCB *)0;                       /* TCB lists initializations          */
+    //当前整个TCB都是没有使用的，空闲TCB链表指向第一个。
     OSTCBFreeList           = &OSTCBTbl[0];
 }
 
